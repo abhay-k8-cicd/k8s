@@ -1,0 +1,78 @@
+ 1245  kubectl create namespace istio-system
+ 1246  GRAFANA_USERNAME=$(echo -n "grafana" | base64)
+ 1247  GRAFANA_PASSPHRASE=$(echo -n "Priar@123" | base64) # Replace GrafanaP@ssw0rd with your password
+ 1248  cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: Secret
+metadata:
+  name: grafana
+  namespace: istio-system
+  labels:
+    app: grafana
+type: Opaque
+data:
+  username: $GRAFANA_USERNAME
+  passphrase: $GRAFANA_PASSPHRASE
+EOF
+
+ 1249  -----------------------
+ 1250  KIALI_USERNAME=$(echo -n "kiali" | base64)
+ 1251  KIALI_PASSPHRASE=$(echo -n "Priar@123" | base64) # Replace KialiP@ssw0rd with your password
+ 1252  cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: Secret
+metadata:
+  name: kiali
+  namespace: istio-system
+  labels:
+    app: kiali
+type: Opaque
+data:
+  username: $KIALI_USERNAME
+  passphrase: $KIALI_PASSPHRASE
+EOF
+
+ 1253  JAEGER_PASSPHRASE=$(echo -n "Priar@123" | base64) # Replace JaegerP@ssw0rd with your password
+ 1254  cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: Secret
+metadata:
+  name: jaeger
+  namespace: istio-system
+  labels:
+    app: jaeger
+type: Opaque
+data:
+  username: $JAEGER_USERNAME
+  passphrase: $JAEGER_PASSPHRASE
+EOF
+
+ 1255  kubectl get secret -n istio-syste
+ 1256  kubectl get secret -n istio-system
+ 1257  ls
+ 1258  cd ..
+ 1259  ls
+ 1260  cd istio_installation/
+ 1261  ls
+ 1262  istioctl manifest apply -f istio-control-plane.yaml
+ 1263  kubectl annotate svc istio-ingressgateway service.beta.kubernetes.io/aws-load-balancer-type="nlb" -n istio-system
+ 1264  kubectl annotate svc istio-ingressgateway service.beta.kubernetes.io/aws-load-balancer-internal="0.0.0.0/0" -n istio-system        
+ 1265  kubectl get svc istio-ingressgateway  -n istio-system
+ 1266  istioctl dashboard grafana
+ 1267  clear
+ 1268  kubectl create ns demo
+ 1269  kubectl label namespace demo istio-injection=enabled
+ 1270  kubectl get namespace demo -L istio-injection
+ 1271  ls
+ 1272  cd ..
+ 1273  ls
+ 1274  cd bookinfo_application/
+ 1275  ls
+ 1276  kubectl apply -f bookinfo.yaml -n demo
+ 1280  kubectl apply -f bookinfo-gateway.yaml -n demo
+ 1281  kubectl get pods -n demo
+ 1282  kubectl get svc -n demo
+ 1283  kubectl -n demo exec "$(kubectl get pod  -n demo -l app=ratings -o jsonpath='{.items[0].metadata.name}')" -c ratings -- curl productpage:9080/productpage | grep -o "<title>.*</title>"
+ 1284  curl -s http://www.priartw.com/productpage  |  grep -o "<title>.*</title>"
+ 1285  curl -s http://priartw.com/productpage  |  grep -o "<title>.*</title>"
+ 1286  history
